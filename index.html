@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fiqi Ilham Santoso — Environmental Geographer & GIS Analyst</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --cream: #F5F2EC;
+    --ink: #1A1A18;
+    --moss: #3B6D11;
+    --moss-light: #EAF3DE;
+    --teal: #0F6E56;
+    --teal-light: #E1F5EE;
+    --steel: #185FA5;
+    --steel-light: #E6F1FB;
+    --amber: #854F0B;
+    --amber-light: #FAEEDA;
+    --muted: #6B6B63;
+    --border: rgba(26,26,24,0.1);
+    --serif: 'DM Serif Display', Georgia, serif;
+    --sans: 'DM Sans', system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.7;
+    font-size: 16px;
+    font-weight: 300;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.25rem 3rem;
+    background: rgba(245,242,236,0.88);
+    backdrop-filter: blur(16px);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .nav-logo {
+    font-family: var(--serif);
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--ink); }
+
+  /* ── SECTIONS ── */
+  section { position: relative; z-index: 1; }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding-top: 80px;
+  }
+  .hero-left {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 6rem 4rem 6rem 3rem;
+    border-right: 0.5px solid var(--border);
+  }
+  .hero-eyebrow {
+    font-size: 12px; font-weight: 400; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--teal);
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .hero-eyebrow::before {
+    content: ''; display: block; width: 32px; height: 1px; background: var(--teal);
+  }
+  .hero-name {
+    font-family: var(--serif);
+    font-size: clamp(42px, 5vw, 68px);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 1.5rem;
+  }
+  .hero-name em { font-style: italic; color: var(--teal); }
+  .hero-desc {
+    font-size: 16px; font-weight: 300; color: var(--muted);
+    max-width: 420px; line-height: 1.8;
+    margin-bottom: 2.5rem;
+  }
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-size: 13px; font-weight: 500; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink);
+    text-decoration: none;
+    padding: 14px 28px;
+    border: 1px solid var(--ink);
+    transition: all 0.25s;
+  }
+  .hero-cta:hover { background: var(--ink); color: var(--cream); }
+  .hero-cta-arrow { transition: transform 0.25s; }
+  .hero-cta:hover .hero-cta-arrow { transform: translateX(4px); }
+
+  .hero-right {
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 6rem 3rem 4rem;
+    position: relative;
+  }
+  .hero-photo-frame {
+    width: 100%;
+    aspect-ratio: 4/5;
+    background: var(--moss-light);
+    border: 0.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .hero-photo-frame img {
+    width: 100%; height: 100%; object-fit: cover;
+    display: block;
+  }
+  .photo-placeholder {
+    text-align: center; color: var(--muted);
+    font-size: 13px; line-height: 2;
+  }
+  .photo-placeholder span { display: block; font-size: 40px; margin-bottom: 8px; opacity: 0.3; }
+
+  .hero-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 0.5px solid var(--border);
+  }
+  .stat-item {
+    padding: 1rem;
+    border-right: 0.5px solid var(--border);
+    text-align: center;
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num { font-family: var(--serif); font-size: 28px; color: var(--ink); }
+  .stat-label { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; margin-top: 2px; }
+
+  /* ── ABOUT ── */
+  #about {
+    display: grid; grid-template-columns: 1fr 2fr;
+    border-top: 0.5px solid var(--border);
+  }
+  .about-sidebar {
+    padding: 5rem 3rem;
+    border-right: 0.5px solid var(--border);
+    position: sticky; top: 80px; align-self: start;
+  }
+  .section-label {
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); font-weight: 400;
+    display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem;
+  }
+  .section-label::before {
+    content: ''; width: 24px; height: 1px; background: var(--muted);
+  }
+  .section-title {
+    font-family: var(--serif);
+    font-size: clamp(28px, 3.5vw, 44px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .about-content { padding: 5rem 4rem 5rem 3rem; }
+  .about-lead {
+    font-family: var(--serif);
+    font-size: 22px; font-style: italic;
+    line-height: 1.5; color: var(--ink);
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .about-body {
+    font-size: 15.5px; color: var(--muted);
+    line-height: 1.85; margin-bottom: 2rem;
+  }
+  .about-body + .about-body { margin-top: -1rem; }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2rem; }
+  .tag {
+    font-size: 12px; font-weight: 400; letter-spacing: 0.04em;
+    padding: 6px 14px;
+    border: 0.5px solid var(--border);
+    color: var(--muted);
+  }
+  .tag.green { background: var(--moss-light); border-color: var(--moss); color: var(--moss); }
+  .tag.teal { background: var(--teal-light); border-color: var(--teal); color: var(--teal); }
+  .tag.blue { background: var(--steel-light); border-color: var(--steel); color: var(--steel); }
+  .tag.amber { background: var(--amber-light); border-color: var(--amber); color: var(--amber); }
+
+  /* ── SKILLS ── */
+  #skills {
+    border-top: 0.5px solid var(--border);
+    padding: 5rem 3rem;
+    background: var(--ink);
+    color: var(--cream);
+  }
+  .skills-header {
+    display: flex; align-items: baseline; gap: 2rem;
+    margin-bottom: 4rem;
+    border-bottom: 0.5px solid rgba(245,242,236,0.15);
+    padding-bottom: 2rem;
+  }
+  .skills-header .section-label { color: rgba(245,242,236,0.4); }
+  .skills-header .section-label::before { background: rgba(245,242,236,0.4); }
+  .skills-header .section-title { color: var(--cream); }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+  }
+  .skill-col {
+    padding: 2rem 2rem 2rem 0;
+    border-right: 0.5px solid rgba(245,242,236,0.12);
+    padding-right: 2rem;
+  }
+  .skill-col:first-child { padding-left: 0; }
+  .skill-col:last-child { border-right: none; padding-right: 0; }
+  .skill-col-title {
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: rgba(245,242,236,0.45);
+    margin-bottom: 1.5rem;
+  }
+  .skill-item {
+    font-size: 14px; font-weight: 300; color: var(--cream);
+    padding: 8px 0;
+    border-bottom: 0.5px solid rgba(245,242,236,0.08);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .skill-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--cream); opacity: 0.25;
+  }
+  .skill-dot.active { background: #5DCAA5; opacity: 1; }
+  .skill-dot.semi { background: #EF9F27; opacity: 1; }
+
+  /* ── PROJECTS ── */
+  #projects {
+    border-top: 0.5px solid var(--border);
+  }
+  .projects-header {
+    padding: 5rem 3rem 3rem;
+    border-bottom: 0.5px solid var(--border);
+    display: flex; align-items: flex-end; justify-content: space-between;
+  }
+  .project-count {
+    font-family: var(--serif); font-size: 11vw; font-weight: 400;
+    line-height: 1; color: var(--cream); text-shadow: -1px -1px 0 var(--border), 1px -1px 0 var(--border), -1px 1px 0 var(--border), 1px 1px 0 var(--border);
+    margin-right: 2rem; flex-shrink: 0;
+    -webkit-text-stroke: 1px var(--border);
+    color: transparent;
+  }
+
+  .project-entry {
+    display: grid; grid-template-columns: 80px 1fr 1fr;
+    border-bottom: 0.5px solid var(--border);
+    transition: background 0.2s;
+    cursor: default;
+  }
+  .project-entry:hover { background: rgba(26,26,24,0.02); }
+
+  .project-num {
+    padding: 2.5rem 1rem 2.5rem 3rem;
+    font-size: 12px; color: var(--muted);
+    border-right: 0.5px solid var(--border);
+    display: flex; align-items: flex-start; padding-top: 2.8rem;
+    font-weight: 400;
+  }
+  .project-left { padding: 2.5rem 2rem; border-right: 0.5px solid var(--border); }
+  .project-right { padding: 2.5rem 3rem 2.5rem 2rem; }
+
+  .project-type {
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--teal); margin-bottom: 0.75rem; font-weight: 400;
+  }
+  .project-title {
+    font-family: var(--serif); font-size: 22px; line-height: 1.25;
+    letter-spacing: -0.01em; margin-bottom: 1rem;
+  }
+  .project-tools { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1.5rem; }
+  .tool-badge {
+    font-size: 11px; padding: 4px 10px;
+    border: 0.5px solid var(--border); color: var(--muted);
+    letter-spacing: 0.03em;
+  }
+  .project-desc {
+    font-size: 14.5px; color: var(--muted); line-height: 1.8;
+    margin-bottom: 1.5rem;
+  }
+  .project-result {
+    background: var(--moss-light);
+    border-left: 2px solid var(--moss);
+    padding: 10px 14px;
+    font-size: 13px; color: var(--moss);
+    line-height: 1.6;
+    margin-top: 1.5rem;
+  }
+  .project-result strong { font-weight: 500; display: block; margin-bottom: 2px; }
+  .project-img {
+    width: 100%; aspect-ratio: 16/9;
+    background: var(--teal-light);
+    border: 0.5px solid var(--border);
+    margin-top: 1.5rem;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 12px; text-align: center;
+    line-height: 1.6;
+  }
+  .project-img img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* ── PUBLICATION ── */
+  #publication {
+    border-top: 0.5px solid var(--border);
+    padding: 5rem 3rem;
+    background: var(--teal-light);
+  }
+  .pub-inner {
+    max-width: 800px;
+  }
+  .pub-journal {
+    font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--teal); margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .pub-journal::before { content: ''; width: 24px; height: 1px; background: var(--teal); }
+  .pub-title {
+    font-family: var(--serif);
+    font-size: clamp(22px, 3vw, 36px);
+    line-height: 1.3; letter-spacing: -0.02em;
+    color: var(--ink); margin-bottom: 1.5rem;
+  }
+  .pub-meta { font-size: 13px; color: var(--muted); margin-bottom: 2rem; line-height: 1.6; }
+  .pub-abstract { font-size: 15px; color: var(--muted); line-height: 1.85; }
+  .pub-link {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 2rem; font-size: 13px; font-weight: 500;
+    color: var(--teal); text-decoration: none;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    border-bottom: 1px solid var(--teal); padding-bottom: 2px;
+    transition: opacity 0.2s;
+  }
+  .pub-link:hover { opacity: 0.65; }
+
+  /* ── EDUCATION ── */
+  #education {
+    border-top: 0.5px solid var(--border);
+    display: grid; grid-template-columns: 1fr 1fr;
+  }
+  .edu-left {
+    padding: 5rem 3rem;
+    border-right: 0.5px solid var(--border);
+  }
+  .edu-right { padding: 5rem 3rem; }
+  .edu-degree {
+    font-family: var(--serif); font-size: 32px; line-height: 1.2;
+    margin: 1.5rem 0 0.5rem; letter-spacing: -0.02em;
+  }
+  .edu-uni { font-size: 16px; color: var(--muted); margin-bottom: 0.5rem; }
+  .edu-gpa {
+    display: inline-block;
+    background: var(--moss); color: #fff;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
+    padding: 4px 12px; margin-top: 0.5rem;
+  }
+  .edu-thesis {
+    margin-top: 2rem; padding-top: 2rem;
+    border-top: 0.5px solid var(--border);
+  }
+  .edu-thesis-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
+  .edu-thesis-title { font-size: 15px; line-height: 1.6; }
+
+  .awards-list { list-style: none; }
+  .award-item {
+    padding: 1.25rem 0;
+    border-bottom: 0.5px solid var(--border);
+    display: flex; gap: 1rem; align-items: flex-start;
+  }
+  .award-icon { color: var(--amber); flex-shrink: 0; margin-top: 2px; }
+  .award-title { font-size: 14.5px; line-height: 1.5; }
+  .award-event { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* ── CONTACT ── */
+  #contact {
+    border-top: 0.5px solid var(--border);
+    padding: 6rem 3rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+    align-items: center;
+  }
+  .contact-left .section-title { margin-top: 1rem; margin-bottom: 1.5rem; }
+  .contact-sub { font-size: 16px; color: var(--muted); line-height: 1.8; }
+  .contact-links { list-style: none; margin-top: 2.5rem; }
+  .contact-link-item {
+    display: flex; align-items: center; gap: 16px;
+    padding: 1rem 0; border-bottom: 0.5px solid var(--border);
+  }
+  .contact-link-item a {
+    font-size: 15px; color: var(--ink); text-decoration: none;
+    transition: color 0.2s;
+  }
+  .contact-link-item a:hover { color: var(--teal); }
+  .contact-link-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); min-width: 70px; }
+
+  .contact-right {
+    background: var(--ink); color: var(--cream);
+    padding: 3rem;
+  }
+  .contact-right-title { font-family: var(--serif); font-size: 24px; margin-bottom: 1.5rem; }
+  .cv-desc { font-size: 14px; color: rgba(245,242,236,0.6); line-height: 1.7; margin-bottom: 2rem; }
+  .cv-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 500; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: var(--cream);
+    padding: 14px 28px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .cv-btn:hover { opacity: 0.85; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 0.5px solid var(--border);
+    padding: 2rem 3rem;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; color: var(--muted);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up {
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards;
+  }
+  .delay-1 { animation-delay: 0.15s; }
+  .delay-2 { animation-delay: 0.3s; }
+  .delay-3 { animation-delay: 0.45s; }
+  .delay-4 { animation-delay: 0.6s; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    #hero { grid-template-columns: 1fr; }
+    .hero-left { padding: 3rem 1.5rem; border-right: none; }
+    .hero-right { padding: 2rem 1.5rem 3rem; }
+    #about { grid-template-columns: 1fr; }
+    .about-sidebar { position: static; padding: 3rem 1.5rem 1rem; border-right: none; }
+    .about-content { padding: 1.5rem 1.5rem 3rem; }
+    .skills-grid { grid-template-columns: 1fr 1fr; }
+    .skill-col { padding: 1.5rem; border-bottom: 0.5px solid rgba(245,242,236,0.12); }
+    #skills { padding: 3rem 1.5rem; }
+    .projects-header { padding: 3rem 1.5rem; flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .project-count { font-size: 20vw; }
+    .project-entry { grid-template-columns: 40px 1fr; }
+    .project-right { display: none; }
+    .project-num { padding: 2rem 0.5rem 2rem 1.5rem; }
+    .project-left { padding: 2rem 1.5rem; border-right: none; }
+    #publication { padding: 3rem 1.5rem; }
+    #education { grid-template-columns: 1fr; }
+    .edu-left { border-right: none; padding: 3rem 1.5rem 2rem; }
+    .edu-right { padding: 1.5rem 1.5rem 3rem; }
+    #contact { grid-template-columns: 1fr; padding: 3rem 1.5rem; gap: 2rem; }
+    footer { padding: 1.5rem; flex-direction: column; gap: 0.5rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">Fiqi Ilham Santoso</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#publication">Publication</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow fade-up">Environmental Geographer · Jakarta, Indonesia</p>
+    <h1 class="hero-name fade-up delay-1">
+      Mapping<br><em>environments,</em><br>modelling<br>futures.
+    </h1>
+    <p class="hero-desc fade-up delay-2">
+      GIS analyst and hydrological modeller with expertise in flood hazard assessment, geospatial data management, and environmental compliance — bridging field research with spatial intelligence.
+    </p>
+    <a href="#projects" class="hero-cta fade-up delay-3">
+      View Projects <span class="hero-cta-arrow">→</span>
+    </a>
+  </div>
+
+  <div class="hero-right fade-up delay-1">
+    <div class="hero-photo-frame">
+      <!-- REPLACE THIS: add your photo as <img src="your-photo.jpg" alt="Fiqi Ilham Santoso"> -->
+      <!-- Or remove the div and keep the placeholder -->
+      <div class="photo-placeholder">
+        <span>🗺️</span>
+        Replace with your photo<br>
+        <small>Recommended: portrait, 4:5 ratio</small>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">3.79</div>
+        <div class="stat-label">GPA · Cum Laude</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">2</div>
+        <div class="stat-label">Publications</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">15+</div>
+        <div class="stat-label">Survey Sites</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-sidebar">
+    <div class="section-label">About me</div>
+    <h2 class="section-title">Who<br>I am</h2>
+  </div>
+  <div class="about-content">
+    <p class="about-lead">
+      "An environmental geographer who finds clarity in complexity — translating raw field data, satellite imagery, and hydrological models into decisions that protect communities and ecosystems."
+    </p>
+    <p class="about-body">
+      I graduated <em>Cum Laude</em> in Environmental Geography from Universitas Gadjah Mada (GPA 3.79/4.00), where I built deep expertise in the full chain of environmental spatial analysis: from wading rivers to collect cross-section discharge measurements, to calibrating SWMM flood models, to producing publication-ready geospatial outputs.
+    </p>
+    <p class="about-body">
+      My thesis applied storm water management modelling to evaluate urban drainage failure and flood hazard scenarios in Salatiga. As a Research Assistant at UGM, I processed over a decade of meteorological time-series for watershed flood compliance studies, and contributed to a peer-reviewed paper on river morphometry. In 2024, I led authorship of a published geohazard study on Semeru Volcano's lahar flow dynamics, applying Flow-R and DEM analysis to map risk corridors and propose countermeasures.
+    </p>
+    <p class="about-body">
+      Currently, I maintain and quality-control a national-scale geospatial database at Indonesia's Ministry of Forestry — processing 20+ regulatory documents daily and applying environmental compliance frameworks to forest area permitting maps. I am proficient in QGIS, ArcGIS, SWMM, HEC-HMS/RAS, Flow-R, Python, and RStudio, and I am actively developing skills in remote sensing workflows and coastal process modelling.
+    </p>
+    <div class="tags">
+      <span class="tag teal">Hydrological Modelling</span>
+      <span class="tag teal">GIS & Spatial Analysis</span>
+      <span class="tag green">Remote Sensing</span>
+      <span class="tag green">Environmental Compliance</span>
+      <span class="tag blue">Flood Hazard Assessment</span>
+      <span class="tag blue">Geohazard Mapping</span>
+      <span class="tag amber">Field Survey & Data Collection</span>
+      <span class="tag amber">Sediment Transport</span>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="skills-header">
+    <div>
+      <div class="section-label">Technical skills</div>
+      <h2 class="section-title">Tools &<br>Competencies</h2>
+    </div>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-col">
+      <div class="skill-col-title">GIS & Spatial</div>
+      <div class="skill-item">QGIS <span class="skill-dot active"></span></div>
+      <div class="skill-item">ArcGIS <span class="skill-dot active"></span></div>
+      <div class="skill-item">Geodetic GPS <span class="skill-dot active"></span></div>
+      <div class="skill-item">Remote Sensing <span class="skill-dot active"></span></div>
+      <div class="skill-item">Satellite Image Processing <span class="skill-dot semi"></span></div>
+    </div>
+    <div class="skill-col" style="padding-left: 2rem;">
+      <div class="skill-col-title">Hydrological Modelling</div>
+      <div class="skill-item">SWMM <span class="skill-dot active"></span></div>
+      <div class="skill-item">HEC-HMS <span class="skill-dot active"></span></div>
+      <div class="skill-item">HEC-RAS <span class="skill-dot active"></span></div>
+      <div class="skill-item">Flow-R <span class="skill-dot active"></span></div>
+    </div>
+    <div class="skill-col" style="padding-left: 2rem;">
+      <div class="skill-col-title">Data & Programming</div>
+      <div class="skill-item">Python <span class="skill-dot semi"></span></div>
+      <div class="skill-item">RStudio <span class="skill-dot active"></span></div>
+      <div class="skill-item">SQL <span class="skill-dot semi"></span></div>
+      <div class="skill-item">Microsoft Office <span class="skill-dot active"></span></div>
+    </div>
+    <div class="skill-col" style="padding-left: 2rem;">
+      <div class="skill-col-title">Environmental Domain</div>
+      <div class="skill-item">Flood Risk Assessment <span class="skill-dot active"></span></div>
+      <div class="skill-item">Urban Hydrology <span class="skill-dot active"></span></div>
+      <div class="skill-item">Sediment Transport <span class="skill-dot active"></span></div>
+      <div class="skill-item">Environmental Permitting <span class="skill-dot active"></span></div>
+      <div class="skill-item">Technical Report Writing <span class="skill-dot active"></span></div>
+    </div>
+  </div>
+  <div style="margin-top: 2rem; display: flex; gap: 2rem; font-size: 12px; color: rgba(245,242,236,0.45);">
+    <span style="display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:#5DCAA5;display:inline-block;"></span> Proficient</span>
+    <span style="display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:#EF9F27;display:inline-block;"></span> Developing</span>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="projects-header">
+    <div>
+      <div class="section-label">Selected work</div>
+      <h2 class="section-title">Research &<br>Projects</h2>
+    </div>
+    <div class="project-count" aria-hidden="true">05</div>
+  </div>
+
+  <!-- Project 1 -->
+  <div class="project-entry">
+    <div class="project-num">01</div>
+    <div class="project-left">
+      <div class="project-type">Undergraduate Thesis · 2025</div>
+      <h3 class="project-title">Urban Flood Hazard Mitigation via SWMM — Sidomukti Catchment, Salatiga</h3>
+      <div class="project-tools">
+        <span class="tool-badge">SWMM</span>
+        <span class="tool-badge">ArcGIS</span>
+        <span class="tool-badge">Python</span>
+        <span class="tool-badge">Satellite Data</span>
+        <span class="tool-badge">Field Hydrometry</span>
+      </div>
+    </div>
+    <div class="project-right">
+      <p class="project-desc">
+        Urban flooding in Salatiga's Sidomukti catchment presented recurring hazards to residents and infrastructure. To evaluate the root cause and model future risk, I integrated multi-source data — satellite imagery, weather station records, and field-measured channel cross-sections — into a calibrated SWMM (Storm Water Management Model).
+      </p>
+      <p class="project-desc">
+        The model simulated flood discharge and runoff behaviour under multiple storm return periods (2-year, 5-year, 25-year). I identified critical drainage bottlenecks and produced a spatial risk map of inundation-prone zones, delivering concrete channel redesign recommendations to support city-level flood management planning.
+      </p>
+      <div class="project-result">
+        <strong>Key output</strong>
+        Calibrated SWMM model + flood discharge maps identifying priority intervention zones for Salatiga municipal drainage upgrades.
+      </div>
+      <!-- Add your screenshot here: -->
+      <!-- <div class="project-img"><img src="swmm-output.jpg" alt="SWMM model output map"></div> -->
+      <div class="project-img">[ Add your SWMM output map or drainage analysis screenshot here ]</div>
+    </div>
+  </div>
+
+  <!-- Project 2 -->
+  <div class="project-entry">
+    <div class="project-num">02</div>
+    <div class="project-left">
+      <div class="project-type">Research Publication · 2024</div>
+      <h3 class="project-title">Lahar Flow Modelling at Semeru Volcano Using Flow-R</h3>
+      <div class="project-tools">
+        <span class="tool-badge">Flow-R</span>
+        <span class="tool-badge">QGIS</span>
+        <span class="tool-badge">Remote Sensing</span>
+        <span class="tool-badge">DEM Analysis</span>
+        <span class="tool-badge">Field Sediment Sampling</span>
+      </div>
+    </div>
+    <div class="project-right">
+      <p class="project-desc">
+        Semeru Volcano's active eruptive cycle generates lahar flows that threaten downstream communities along the Besuk Kobokan river system. As corresponding author, I led the application of the Flow-R geohazard modelling framework to map probable lahar flow paths and deposition zones across multiple DEM-derived terrain scenarios.
+      </p>
+      <p class="project-desc">
+        Field sediment samples and geodetic GPS data — collected during my internship at Sabo Engineering Office — informed the model parameterisation. The study identified high-risk corridors, evaluated existing sabo dam effectiveness, and proposed spatial countermeasure strategies to the Ministry of Public Works.
+      </p>
+      <div class="project-result">
+        <strong>Key output</strong>
+        Published in IOP Conference Series: Earth and Environmental Science (2024). Lahar risk zone maps and countermeasure recommendations for Semeru volcanic area.
+      </div>
+      <!-- <div class="project-img"><img src="flow-r-map.jpg" alt="Flow-R lahar risk map"></div> -->
+      <div class="project-img">[ Add your Flow-R lahar hazard map here ]</div>
+    </div>
+  </div>
+
+  <!-- Project 3 -->
+  <div class="project-entry">
+    <div class="project-num">03</div>
+    <div class="project-left">
+      <div class="project-type">Research Assistant · 2024–2025</div>
+      <h3 class="project-title">Belik Watershed Flood Modelling & Blongkeng River Morphometry</h3>
+      <div class="project-tools">
+        <span class="tool-badge">SWMM</span>
+        <span class="tool-badge">HEC-HMS</span>
+        <span class="tool-badge">RStudio</span>
+        <span class="tool-badge">Time-Series Analysis</span>
+        <span class="tool-badge">River Survey</span>
+      </div>
+    </div>
+    <div class="project-right">
+      <p class="project-desc">
+        As Research Assistant at UGM's Faculty of Geography, I processed over 10 years of meteorological and hydrological time-series records for the Belik Watershed (Yogyakarta) to support SWMM-based flood compliance modelling — a workflow directly analogous to hydrodynamic modelling in professional environmental project delivery.
+      </p>
+      <p class="project-desc">
+        In parallel, I conducted independent river morphometry surveys across 5 segments of the Blongkeng River: measuring channel cross-sections, calculating discharge values, characterising bank morphology, and conducting sedimentation analysis. This fieldwork contributed data to a peer-reviewed publication on river dynamics and geomorphological change.
+      </p>
+      <div class="project-result">
+        <strong>Key output</strong>
+        10+ year hydrological dataset processed for flood modelling compliance; river morphometry dataset contributing to peer-reviewed publication.
+      </div>
+      <div class="project-img">[ Add cross-section survey charts or river morphometry maps here ]</div>
+    </div>
+  </div>
+
+  <!-- Project 4 -->
+  <div class="project-entry">
+    <div class="project-num">04</div>
+    <div class="project-left">
+      <div class="project-type">Field Internship · Aug–Dec 2023</div>
+      <h3 class="project-title">Geodetic Survey & Lahar Hazard Research — Semeru, East Java</h3>
+      <div class="project-tools">
+        <span class="tool-badge">Geodetic GPS</span>
+        <span class="tool-badge">ArcGIS</span>
+        <span class="tool-badge">Sediment Testing</span>
+        <span class="tool-badge">Soil Mechanics</span>
+        <span class="tool-badge">Topographic Analysis</span>
+      </div>
+    </div>
+    <div class="project-right">
+      <p class="project-desc">
+        Deployed at the Sabo Engineering Office (Ministry of Public Works and Housing) for a 5-month internship in active volcanic lahar zones around Semeru, East Java. I collected high-precision geospatial data using geodetic GPS equipment across multiple survey sites, performed sediment particle size analysis, and recorded soil mechanics parameters to characterise lahar deposit properties.
+      </p>
+      <p class="project-desc">
+        I analysed topographic and meteorological datasets to contribute to hydrology research reporting, providing the field evidence base that later underpinned our 2024 IOP Conference publication on Semeru lahar flow modelling.
+      </p>
+      <div class="project-result">
+        <strong>Key output</strong>
+        Geospatial and sediment dataset for Semeru lahar zone; topographic analysis contributing to published IOP Conference Series paper.
+      </div>
+      <div class="project-img">[ Add field photos or GPS survey maps here ]</div>
+    </div>
+  </div>
+
+  <!-- Project 5 -->
+  <div class="project-entry">
+    <div class="project-num">05</div>
+    <div class="project-left">
+      <div class="project-type">Current Role · Oct 2025–Present</div>
+      <h3 class="project-title">National Forest Spatial Database — Ministry of Forestry</h3>
+      <div class="project-tools">
+        <span class="tool-badge">QGIS</span>
+        <span class="tool-badge">ArcGIS</span>
+        <span class="tool-badge">SQL</span>
+        <span class="tool-badge">SINERGY System</span>
+        <span class="tool-badge">Environmental Permitting</span>
+      </div>
+    </div>
+    <div class="project-right">
+      <p class="project-desc">
+        Within Indonesia's national SINERGY Information System, I maintain and update the geospatial records underpinning forest area utilisation permits for the Directorate of Forestry Planning. Processing 20+ regulatory documents daily, I apply GIS quality control standards to ensure spatial accuracy of forest boundary and land-use maps at national scale.
+      </p>
+      <p class="project-desc">
+        My work applies Indonesia's environmental regulatory framework (PermenLHK No. 7/2021) to compliance documentation, requiring both technical GIS precision and clear understanding of environmental permitting law. I also resolve multi-source dataset inconsistencies, improving reporting accuracy across a complex national spatial database.
+      </p>
+      <div class="project-result">
+        <strong>Key output</strong>
+        Accurate national-scale forest geospatial database; 20+ permit documents processed daily under PermenLHK No. 7/2021 compliance framework.
+      </div>
+      <div class="project-img">[ Add a spatial database screenshot or map output here ]</div>
+    </div>
+  </div>
+</section>
+
+<!-- PUBLICATION -->
+<section id="publication">
+  <div class="pub-inner">
+    <div class="pub-journal">IOP Conference Series: Earth and Environmental Science · 2024</div>
+    <h2 class="pub-title">Lahar Flow Characteristics of Semeru Volcano Based on Flow-R Model and Its Countermeasure</h2>
+    <div class="pub-meta">
+      <strong>Fiqi Ilham Santoso</strong> (Corresponding Author) · Universitas Gadjah Mada<br>
+      Published in IOP Conference Series: Earth and Environmental Science, 2024.
+    </div>
+    <p class="pub-abstract">
+      This study applied the Flow-R geohazard model to characterise lahar flow paths originating from Semeru Volcano, East Java — one of Indonesia's most active volcanic systems. Using digital elevation models (DEM), remote sensing data, and field-collected sediment parameters gathered during survey operations with the Sabo Engineering Office, we modelled probable flow corridors, run-out distances, and deposition zones under multiple eruption scenarios. The study evaluated the effectiveness of existing sabo dam infrastructure and proposed spatial countermeasure recommendations to the Ministry of Public Works, providing an evidence base for disaster risk reduction planning in volcanic lahar-prone communities.
+    </p>
+    <!-- Replace # with actual DOI link when available -->
+    <a href="#" class="pub-link">View Publication → IOP Conference Series</a>
+  </div>
+</section>
+
+<!-- EDUCATION & AWARDS -->
+<section id="education">
+  <div class="edu-left">
+    <div class="section-label">Education</div>
+    <h2 class="edu-degree">B.Sc. in Environmental Geography</h2>
+    <div class="edu-uni">Universitas Gadjah Mada, Yogyakarta</div>
+    <div class="edu-uni" style="color: var(--muted); font-size: 14px;">August 2021 – July 2025</div>
+    <span class="edu-gpa">GPA 3.79 / 4.00 · Cum Laude</span>
+
+    <div class="edu-thesis">
+      <div class="edu-thesis-label">Undergraduate Thesis</div>
+      <div class="edu-thesis-title">"Storm Water Management Model (SWMM) Application for Drainage Channels Evaluation in the Sidomukti Catchment Area, Salatiga City" — integrating satellite, weather, and field hydrological data to mitigate urban flood hazards.</div>
+    </div>
+
+    <div style="margin-top: 2rem; padding-top: 2rem; border-top: 0.5px solid var(--border);">
+      <div class="edu-thesis-label">Relevant Coursework</div>
+      <div class="tags" style="margin-top: 0.75rem;">
+        <span class="tag">Hydrology & Water Resources</span>
+        <span class="tag">Remote Sensing</span>
+        <span class="tag">Environmental Modelling</span>
+        <span class="tag">Geomorphology</span>
+        <span class="tag">Geohazard Assessment</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="edu-right">
+    <div class="section-label">Awards & Recognition</div>
+    <ul class="awards-list">
+      <li class="award-item">
+        <div class="award-icon">★</div>
+        <div>
+          <div class="award-title">2nd Runner Up — Essay Competition, Renewable Energy</div>
+          <div class="award-event">National Ideation Competition Resummit 2.0, UPN "Veteran" Yogyakarta · 2023</div>
+        </div>
+      </li>
+      <li class="award-item">
+        <div class="award-icon">★</div>
+        <div>
+          <div class="award-title">2nd Place — Essay Competition, Sustainable Waste Management</div>
+          <div class="award-event">LMI Essay Competition · 2023</div>
+        </div>
+      </li>
+      <li class="award-item">
+        <div class="award-icon">★</div>
+        <div>
+          <div class="award-title">GIS Competition Finalist — Carbon Stock Calculation, YIA</div>
+          <div class="award-event">Geographic Information Science Dept., UGM · Yogyakarta International Airport Study Area · 2023</div>
+        </div>
+      </li>
+      <li class="award-item">
+        <div class="award-icon">★</div>
+        <div>
+          <div class="award-title">National Science Olympiad — Provincial Level, Geography</div>
+          <div class="award-event">Salatiga Representative · Central Java · 2020</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-left">
+    <div class="section-label">Get in touch</div>
+    <h2 class="section-title">Let's work<br>together</h2>
+    <p class="contact-sub">
+      Open to opportunities in environmental consulting, GIS analysis, hydrological modelling, and EMMP/AMDAL project delivery — in Indonesia or internationally.
+    </p>
+    <ul class="contact-links">
+      <li class="contact-link-item">
+        <span class="contact-link-label">Email</span>
+        <a href="mailto:fiqiilhamsantoso@gmail.com">fiqiilhamsantoso@gmail.com</a>
+      </li>
+      <li class="contact-link-item">
+        <span class="contact-link-label">LinkedIn</span>
+        <a href="https://www.linkedin.com/in/fiqiilhamsantoso" target="_blank" rel="noopener">linkedin.com/in/fiqiilhamsantoso</a>
+      </li>
+      <li class="contact-link-item">
+        <span class="contact-link-label">Location</span>
+        <span>Jakarta, Indonesia</span>
+      </li>
+      <li class="contact-link-item">
+        <span class="contact-link-label">Phone</span>
+        <a href="tel:+6281534121782">+62 815 3412 1782</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="contact-right">
+    <div class="contact-right-title">Download CV</div>
+    <p class="cv-desc">
+      Full curriculum vitae with detailed work history, technical skills, publications, and references available on request.
+    </p>
+    <!-- Replace # with path to your CV PDF, e.g. href="CV_Fiqi_Ilham_Santoso.pdf" -->
+    <a href="#" class="cv-btn">Download CV (PDF) ↓</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2025 Fiqi Ilham Santoso</span>
+  <span>Environmental Geography · GIS · Hydrological Modelling</span>
+</footer>
+
+<script>
+  // Intersection observer for scroll-triggered fade-ins on project entries
+  const entries = document.querySelectorAll('.project-entry, #publication .pub-inner, .award-item');
+  const obs = new IntersectionObserver((els) => {
+    els.forEach(el => {
+      if (el.isIntersecting) {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+        obs.unobserve(el);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  entries.forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(16px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    obs.observe(el);
+  });
+</script>
+
+</body>
+</html>
